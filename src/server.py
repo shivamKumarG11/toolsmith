@@ -58,6 +58,28 @@ def meta() -> dict:
     return {"model": STATE["model"], "sandbox": sb.id if sb else None}
 
 
+@app.get("/api/approve")
+def approve(invoice: str):
+    """Human-approved: finalize the draft invoice host-side (the key never enters the VM)."""
+    import urllib.request
+    import urllib.error
+    url = f"https://api.stripe.com/v1/invoices/{invoice}/finalize"
+    req = urllib.request.Request(url, data=b"", method="POST")
+    key = config.require("STRIPE_SECRET_KEY", config.STRIPE_SECRET_KEY)
+    import base64
+    req.add_header("Authorization", "Basic " + base64.b64encode(f"{key}:".encode()).decode())
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read())
+        return {"ok": True, "status": data.get("status"),
+                "hosted_invoice_url": data.get("hosted_invoice_url"),
+                "number": data.get("number")}
+    except urllib.error.HTTPError as e:
+        return {"ok": False, "error": e.read().decode()[:200]}
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:200]}
+
+
 @app.get("/api/build")
 def build(request: Request, spec: str = "turn a timesheet CSV into a Stripe invoice",
           customer: str | None = None):

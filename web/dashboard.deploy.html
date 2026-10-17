@@ -235,9 +235,27 @@ function clearUI(){stream.innerHTML='';$('rounds').innerHTML='';
 function addRound(n,ok){const r=document.createElement('div');r.className='round '+(ok?'pass':'fail');r.textContent=n;$('rounds').appendChild(r);}
 function setTest(ok,note){const c=$('test-chip');c.className='chip '+(ok?'green':'red');c.textContent=(ok?'● passed':'● failed');$('test-note').textContent=note||'';}
 function setInvoice(d){$('inv-amt').textContent='$'+(d.total_cents/100).toFixed(2);$('inv-id').textContent=d.id||'—';
-  $('inv-status').textContent=d.status||'—';const a=$('approval');a.hidden=false;
-  if(d.needs_approval){a.className='approval need';a.textContent='⏸ Needs approval — over the $200 cap';}
+  $('inv-status').textContent=d.status||'—';const a=$('approval');a.hidden=false;a.innerHTML='';
+  if(d.needs_approval){a.className='approval need';
+    const s=document.createElement('span');s.textContent='⏸ Over the $200 cap — needs your approval';
+    const b=document.createElement('button');b.className='btn';b.textContent='Approve & finalize';
+    b.style.minHeight='34px';b.style.padding='0 14px';b.style.marginLeft='auto';b.style.fontSize='12.5px';
+    b.onclick=()=>approve(d.id,a,b);a.append(s,b);}
   else{a.className='approval auto';a.textContent='✓ Auto-approved — under the $200 cap';}}
+function approve(id,a,b){
+  b.disabled=true;b.textContent='finalizing…';
+  fetch('/api/approve?invoice='+encodeURIComponent(id)).then(r=>r.json()).then(d=>{
+    a.className='approval auto';
+    if(d.ok){$('inv-status').textContent=d.status||'open';a.innerHTML='';
+      const t=document.createElement('span');t.textContent='✓ Approved & finalized'+(d.number?(' · '+d.number):'');
+      a.append(t);
+      if(d.hosted_invoice_url){const link=document.createElement('a');link.href=d.hosted_invoice_url;
+        link.target='_blank';link.textContent='view invoice ↗';link.style.marginLeft='auto';a.append(link);}}
+    else{a.className='approval need';a.textContent='finalize failed — '+(d.error||'').slice(0,60);}
+  }).catch(()=>{ // no backend (hosted replay): simulate
+    a.className='approval auto';a.innerHTML='';
+    const t=document.createElement('span');t.textContent='✓ Approved & finalized (replay)';a.append(t);
+    $('inv-status').textContent='open';});}
 
 // Replay of a real captured run (gemini-3.5-flash-lite). Keeps the page alive at
 // rest and is the offline fallback when no server is attached.
