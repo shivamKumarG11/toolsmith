@@ -186,7 +186,7 @@ fetch('api/meta').then(r=>r.json()).then(m=>{
 
 function recent(){fetch('api/tools').then(r=>r.json()).then(ts=>{$('recent').innerHTML='';
   if(!ts.length){$('recent').innerHTML='<div class="empty">No tools yet — forge the first one.</div>';return;}
-  ts.slice(0,12).forEach(t=>{const a=document.createElement('a');a.className='sticker rt';a.href='use.html?tool='+encodeURIComponent(t.id);
+  ts.forEach(t=>{const a=document.createElement('a');a.className='sticker rt';a.href='use.html?tool='+encodeURIComponent(t.id);
     const b=document.createElement('b');b.textContent=t.spec.name;const s=document.createElement('span');s.textContent=t.spec.description||t.goal;
     const m=document.createElement('div');m.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
     m.innerHTML=`<span class="pill butter"></span><span class="pill">${t.rounds} round${t.rounds>1?'s':''}</span>`+(t.spec.uses_stripe?'<span class="pill grape">Stripe</span>':'');

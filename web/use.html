@@ -15,7 +15,7 @@
 .band p{margin:10px 0 0;font-size:17px;color:var(--ink-2);max-width:62ch}
 .spons{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center;font-family:var(--mono);font-size:12px;font-weight:700}
 .spons .lg{display:flex;align-items:center;gap:7px;background:#fff;border:2px solid var(--ink);border-radius:11px;padding:5px 11px;text-decoration:none}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:24px;margin-top:26px;padding-bottom:60px}
+.layout{max-width:920px;margin-top:26px;padding-bottom:60px}
 @media(max-width:880px){.layout{grid-template-columns:1fr}}
 .lib{padding:14px;align-self:start;position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto}
 @media(max-width:880px){.lib{position:static;max-height:none}}
@@ -76,15 +76,9 @@ details.src pre{margin:12px 0 0;border:var(--line);border-radius:12px;padding:14
 </div></section>
 
 <main class="wrap layout">
-  <aside class="sticker lib">
-    <h2>🧰 Library <span class="pill" id="count" style="margin-left:auto">0</span></h2>
-    <div id="list"><div style="color:var(--ink-3);padding:6px 4px">Loading…</div></div>
-    <a class="btn sm primary" href="forge.html" style="width:100%;margin-top:4px">+ Forge a new tool</a>
-  </aside>
-
   <section class="main" id="main">
-    <div class="sticker blank"><div class="big">🧰</div><h2 style="margin:8px 0">Pick a tool from the library</h2>
-      <p style="color:var(--ink-2)">or <a href="forge.html">forge a new one</a> — it shows up here the moment it passes its tests.</p></div>
+    <div class="sticker blank"><div class="big">🧰</div><h2 style="margin:8px 0">Loading your tool…</h2>
+      <p style="color:var(--ink-2)">No tools yet? <a href="forge.html">Forge one</a> — it shows up here the moment it passes its tests.</p></div>
   </section>
 </main>
 
@@ -96,15 +90,11 @@ const $=id=>document.getElementById(id);
 let tools=[],current=null;
 function pill(text,cls){const s=document.createElement('span');s.className='pill '+(cls||'');s.textContent=text;return s;}
 
-function loadList(selectId){fetch('api/tools').then(r=>r.json()).then(ts=>{tools=ts;$('count').textContent=ts.length;$('list').innerHTML='';
-  if(!ts.length){$('list').innerHTML='<div style="color:var(--ink-3);padding:6px 4px">No tools yet.</div>';return;}
-  ts.forEach(t=>{const b=document.createElement('button');b.className='ti';b.dataset.id=t.id;
-    const n=document.createElement('b');n.textContent=t.spec.name;const d=document.createElement('span');d.textContent=t.spec.description||t.goal;
-    const pp=document.createElement('div');pp.className='pp';pp.append(pill(OUTPUT_LABEL[t.spec.output]||t.spec.output,'butter'));
-    if(t.spec.uses_stripe)pp.append(pill('Stripe','grape'));
-    b.append(n,d,pp);b.onclick=()=>select(t.id,true);$('list').appendChild(b);});
+// The Forge page lists every tool; this page opens the one picked there (?tool=…) or the newest.
+function loadList(selectId){fetch('api/tools').then(r=>r.json()).then(ts=>{tools=ts;
+  if(!ts.length){$('main').querySelector('h2').textContent='No tools yet';return;}
   const want=selectId||new URLSearchParams(location.search).get('tool')||ts[0].id;
-  select(ts.find(t=>t.id===want)?want:ts[0].id,false);}).catch(()=>{$('list').textContent='Could not load tools.';});}
+  select(ts.find(t=>t.id===want)?want:ts[0].id,false);}).catch(()=>{$('main').querySelector('h2').textContent='Could not load tools.';});}
 
 function select(id,push){fetch('api/tools/'+encodeURIComponent(id)).then(r=>r.json()).then(t=>{current=t;
   document.querySelectorAll('.ti').forEach(b=>b.setAttribute('aria-current',b.dataset.id===id));
@@ -118,7 +108,8 @@ function render(t){const m=$('main');m.innerHTML='';
   const meta=document.createElement('div');meta.className='meta';
   meta.append(pill('asked: “'+t.goal.slice(0,70)+(t.goal.length>70?'…':'')+'”'),pill(`${t.rounds} round${t.rounds>1?'s':''} to green`,'mint'),
     pill(t.model.split('/').pop()),pill(t.spec.uses_stripe?'network: Stripe only':'network: none','sky'));
-  head.append(h,d,meta);m.appendChild(head);
+  const other=document.createElement('a');other.className='btn sm';other.href='forge.html#recent';other.textContent='↺ Pick another tool';other.style.marginTop='14px';
+  head.append(h,d,meta,other);m.appendChild(head);
 
   const form=document.createElement('form');form.className='sticker form';form.noValidate=true;
   (t.spec.inputs||[]).forEach(f=>form.appendChild(field(f)));
