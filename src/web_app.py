@@ -144,6 +144,15 @@ def tool(tool_id: str):
     return m
 
 
+@app.delete("/api/tools/{tool_id}")
+def delete_tool(tool_id: str):
+    if not forge.get_tool(tool_id):
+        raise HTTPException(404, "unknown tool")
+    import shutil
+    shutil.rmtree(forge.TOOLS / tool_id, ignore_errors=True)
+    return {"ok": True, "deleted": tool_id}
+
+
 @app.post("/api/tools/{tool_id}/run")
 async def run(tool_id: str, request: Request):
     body = await request.json()

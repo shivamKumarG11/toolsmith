@@ -28,7 +28,7 @@ a{color:inherit}
 .brand .mk{width:40px;height:40px;border:var(--line);border-radius:12px;background:var(--tangerine);
   display:grid;place-items:center;font-size:20px;box-shadow:3px 3px 0 var(--ink)}
 .brand b{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em}
-.nav a.lk{font-weight:600;font-size:14.5px;text-decoration:none;color:var(--ink-2)}
+.nav a.lk{font-weight:600;font-size:14.5px;text-decoration:none;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
 .nav a.lk:hover,.nav a.lk[aria-current]{color:var(--ink)}
 .nav a.lk[aria-current]{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px;text-decoration-color:var(--tangerine)}
 .gh{display:grid;place-items:center;width:40px;height:40px;border:var(--line);border-radius:12px;background:#fff;box-shadow:3px 3px 0 var(--ink)}

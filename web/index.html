@@ -11,9 +11,9 @@
 <style>
 /* Landing: mint hero band with a live 3D forge, then sponsors, then the story in stickers. */
 .hero{background:var(--mint);border-bottom:var(--line);position:relative;overflow:hidden}
-.hero .in{display:grid;grid-template-columns:1fr 1.05fr;gap:24px;align-items:center;padding-block:46px 40px}
+.hero .in{display:grid;grid-template-columns:1fr 1.15fr;gap:36px;align-items:center;padding-block:30px 26px}
 @media(max-width:900px){.hero .in{grid-template-columns:1fr}}
-.hero h1{font-weight:800;font-size:clamp(36px,6.6vw,84px);line-height:.95;margin:0;overflow-wrap:anywhere}
+.hero h1{font-weight:800;font-size:clamp(36px,6vw,80px);line-height:.95;margin:0;overflow-wrap:anywhere}
 .hero .in>*{min-width:0}
 .hero h1 .hl{background:var(--butter);border:var(--line);border-radius:16px;padding:0 .14em;box-shadow:var(--shadow);
   display:inline-block;transform:rotate(-2deg);margin:.06em 0}
@@ -22,7 +22,7 @@
 .built{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:12.5px;font-weight:700}
 .built .lg{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 12px;text-decoration:none}
 .built img{display:block}
-.stage{position:relative;height:clamp(300px,46vw,560px);min-width:0}
+.stage{position:relative;height:clamp(380px,56vw,700px);min-width:0}
 #scene{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
 #scene:active{cursor:grabbing}
 .stage .hint{position:absolute;right:8px;bottom:6px;font-family:var(--mono);font-size:11.5px;font-weight:700;
@@ -45,7 +45,7 @@
 @media(max-width:560px){.sp{flex-direction:column;align-items:flex-start;padding:22px}.sp .logo-box img{max-height:64px}.sp.c .logo-box img{width:92px;height:62px}.sp.s .logo-box img{width:150px;height:auto}}
 
 /* how it works */
-.how{padding-block:60px 70px}
+.how{padding-block:60px 74px;background:var(--tangerine)}
 .how h2{font-size:clamp(30px,4.4vw,50px);margin:8px 0 0;max-width:18ch}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:34px}
 @media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
@@ -65,8 +65,8 @@
 <body>
 <nav class="nav"><div class="wrap in">
   <a class="brand" href="index.html"><span class="mk">⚒</span><b>Toolsmith</b></a>
-  <a class="lk opt" href="forge.html">Forge</a>
-  <a class="lk opt" href="use.html">Use tools</a>
+  <a class="lk opt" href="forge.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 12-8.4 8.4a2.1 2.1 0 1 1-3-3L12 9"/><path d="m18 15 4-4"/><path d="m21.5 11.5-1.9-1.9A2 2 0 0 1 19 8.2V7l-2.3-2.3a6 6 0 0 0-4.2-1.7L9 3l.9.8A6.2 6.2 0 0 1 12 8.4V10l2 2h1.2a2 2 0 0 1 1.4.6l1.9 1.9"/></svg>Forge</a>
+  <a class="lk opt" href="use.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>Use tools</a>
   <a class="gh" href="https://github.com/shivamKumarG11/toolsmith" target="_blank" rel="noopener" aria-label="Toolsmith on GitHub">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="#16141b" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
   </a>
@@ -77,10 +77,6 @@
   <div class="wrap in">
     <div>
       <h1>Ask for <span class="hl">any tool.</span><br>Watch an agent <span class="hl2">build it.</span></h1>
-      <div class="ctas">
-        <a class="btn primary" href="forge.html">⚒ Forge a tool</a>
-        <a class="btn" href="use.html">Use the tools →</a>
-      </div>
     </div>
     <div class="stage">
       <canvas id="scene" aria-label="3D forge: a glass sandbox with tools orbiting it. Drag to spin, click to forge."></canvas>
@@ -205,7 +201,7 @@
   function resize(){const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);
     camera.aspect=r.width/Math.max(r.height,1);
     // keep the whole orbit (≈4.5 units across each side) inside the frame at any aspect
-    camera.position.z=Math.min(19,Math.max(11.5,15/Math.min(camera.aspect,1.4)));
+    camera.position.z=Math.min(16,Math.max(9,12.2/Math.min(camera.aspect,1.4)));
     camera.updateProjectionMatrix();}
   addEventListener('resize',resize);resize();
 

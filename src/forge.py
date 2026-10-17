@@ -69,7 +69,9 @@ Rules:
 - Only touch files in the current directory. No network unless uses_stripe is True.
 - If uses_stripe: call https://api.stripe.com/v1 with urllib and os.environ["STRIPE_SECRET_KEY"]
   (test mode, form-encoded, integer cents). The key is a test key but its prefix varies
-  (sk_test_, rk_test_ or rkcs_test_) — do not check the prefix. Never fall back to a "preview" or
+  (sk_test_, rk_test_ or rkcs_test_) — do not check the prefix. Available endpoints: customers,
+  products, prices, payment_links, checkout/sessions, coupons, invoiceitems, invoices,
+  payment_intents (promotion_codes and balance are NOT available). Never fall back to a "preview" or
   fake result: if a Stripe call fails, raise an error with Stripe's message. On success return the
   real Stripe object ids. Keep Stripe calls inside run(); put the logic in pure helpers and test
   those — tests must not call Stripe or run().
