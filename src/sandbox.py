@@ -76,9 +76,7 @@ class Sandbox:
     # ---- egress ----
     def set_egress(self, hosts: list[str]) -> None:
         """Replace the allowlist. Applies live to the running sandbox."""
-        args = ["sandbox", "firewall", "set", self.id]
-        for host in hosts:
-            args += ["--egress", host]
+        args = ["sandbox", "firewall", "set", self.id, *hosts]
         proc = _run(args)
         if proc.returncode != 0:
             raise SandboxError(f"firewall set failed: {proc.stderr or proc.stdout}")

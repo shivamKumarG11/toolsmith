@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toolsmith Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* The forge: goal in, live workbench out. Summary (stages) before detail (log, code). */
+.band{background:var(--sky);border-bottom:var(--line)}
+.band .in{padding-block:30px 34px}
+.band h1{font-size:clamp(34px,5vw,58px);margin:0;line-height:1}
+.band p{margin:10px 0 0;font-size:17px;color:var(--ink-2);max-width:60ch}
+.spons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center;font-family:var(--mono);font-size:12px;font-weight:700}
+.spons .lg{display:flex;align-items:center;gap:7px;background:#fff;border:2px solid var(--ink);border-radius:11px;padding:5px 11px;text-decoration:none}
+
+.goal{margin-top:-1px;padding:22px;background:#fff}
+.goal-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end}
+@media(max-width:760px){.goal-row{grid-template-columns:1fr}}
+label.big{font-family:var(--display);font-weight:800;font-size:20px;display:block;margin-bottom:8px}
+textarea#goal{width:100%;min-height:86px;resize:vertical;border:var(--line);border-radius:14px;padding:14px 16px;
+  font-family:var(--body);font-size:17px;background:var(--paper);color:var(--ink)}
+textarea#goal:focus{outline:none;box-shadow:var(--shadow)}
+.side-ctl{display:flex;flex-direction:column;gap:10px;min-width:230px}
+select{border:var(--line);border-radius:12px;padding:10px 12px;font-family:var(--body);font-size:14px;background:#fff;color:var(--ink)}
+.chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.chip{border:2px solid var(--ink);border-radius:999px;padding:6px 13px;background:var(--paper);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--body);color:var(--ink)}
+.chip:hover{background:var(--butter)}
+
+.bench{display:grid;grid-template-columns:1.35fr .9fr;gap:22px;margin-top:26px}
+@media(max-width:940px){.bench{grid-template-columns:1fr}}
+.card{padding:0;overflow:hidden}
+.card h2{font-size:17px;margin:0;padding:13px 18px;border-bottom:var(--line);display:flex;align-items:center;gap:10px}
+.card .body{padding:16px 18px}
+.stages{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+@media(max-width:560px){.stages{grid-template-columns:1fr 1fr}}
+.stg{padding:14px 14px;border-right:2px solid var(--ink);display:flex;flex-direction:column;gap:6px}
+.stg:last-child{border-right:none}
+.stg .t{font-family:var(--display);font-weight:800;font-size:16px}
+.stg .s{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.stg.on{background:var(--butter)} .stg.ok{background:var(--mint)} .stg.bad{background:var(--pink)}
+.rounds{display:flex;gap:7px;align-items:center;padding:10px 18px;border-top:var(--line);font-family:var(--mono);font-size:12.5px;font-weight:700;min-height:48px}
+.rd{width:30px;height:30px;border:2px solid var(--ink);border-radius:9px;display:grid;place-items:center;font-size:12.5px}
+.rd.f{background:var(--pink)} .rd.p{background:var(--mint)}
+.log{font-family:var(--mono);font-size:13px;line-height:1.65;max-height:330px;overflow:auto;padding:12px 18px;background:var(--paper)}
+.ln{display:flex;gap:10px} .ln .tt{color:var(--ink-3);flex:none} .ln .mm{min-width:0;word-break:break-word}
+.ln.fail .mm{color:var(--fail);font-weight:600} .ln.pass .mm{color:var(--pass);font-weight:600} .ln.step .mm{color:var(--ink)} .ln.info .mm{color:var(--ink-2)}
+.empty{color:var(--ink-3);font-size:14.5px;padding:6px 0}
+.eg{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:2px dashed #ddd6c8;font-family:var(--mono);font-size:13px}
+.eg:last-child{border-bottom:none}
+.allow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.fact{border:2px solid var(--ink);border-radius:12px;padding:10px 12px;background:var(--paper)}
+.fact b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.fact span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.tabs{display:flex;gap:6px;padding:10px 18px 0}
+.tab{border:2px solid var(--ink);border-bottom:none;border-radius:10px 10px 0 0;padding:6px 12px;font-family:var(--mono);font-size:12.5px;background:#fff;cursor:pointer;color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--butter)}
+pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mono);font-size:12.5px;max-height:420px;overflow:auto;background:#1c1a22;color:#f3eee6;white-space:pre}
+.done{background:var(--mint);padding:22px;display:none}
+.done.show{display:block}
+.done h3{margin:0;font-size:clamp(24px,3.4vw,34px)}
+.done .meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.preview{margin-top:14px;max-width:520px}
+.recent{margin-top:30px;padding-bottom:50px}
+.recent h2{font-size:24px;margin:0 0 14px}
+.rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.rt{padding:14px 16px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:transform .12s,box-shadow .12s}
+.rt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.rt b{font-family:var(--display);font-size:17px} .rt span{font-size:13.5px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap in">
+  <a class="brand" href="index.html"><span class="mk">⚒</span><b>Toolsmith</b></a>
+  <a class="lk opt" href="index.html">Home</a>
+  <a class="lk" href="forge.html" aria-current="page">Forge</a>
+  <a class="lk" href="use.html">Use tools</a>
+  <a class="gh" href="https://github.com/shivamKumarG11/toolsmith" target="_blank" rel="noopener" aria-label="GitHub">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#16141b" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+  </a>
+</div></nav>
+
+<section class="band"><div class="wrap in">
+  <div class="kicker">Step 2 · The forge</div>
+  <h1>Tell the agent what to build.</h1>
+  <p>It writes the tool and its tests, runs them sealed inside a CreateOS micro-VM, and fixes its own code until everything passes.</p>
+  <div class="spons">Running on
+    <a class="lg" href="https://createos.sh" target="_blank" rel="noopener"><img src="assets/createos-mark.svg" alt="" width="24" height="16">CreateOS Sandbox</a>
+    <a class="lg" href="https://stripe.com" target="_blank" rel="noopener"><img src="assets/stripe-wordmark.svg" alt="Stripe" height="18"></a>
+  </div>
+</div></section>
+
+<main class="wrap">
+  <form class="sticker goal" id="f" style="margin-top:26px">
+    <div class="goal-row">
+      <div>
+        <label class="big" for="goal">What tool do you need?</label>
+        <textarea id="goal" maxlength="400" placeholder="e.g. Turn a list of comma-separated numbers into a bar chart"></textarea>
+      </div>
+      <div class="side-ctl">
+        <select id="model" aria-label="Agent model"></select>
+        <button class="btn primary" id="go" type="submit">⚒ Forge it</button>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+  </form>
+
+  <div class="bench">
+    <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
+      <div class="sticker card">
+        <h2><span class="dot" id="jobdot"></span> Workbench <span class="pill" id="jobstate" style="margin-left:auto">idle</span></h2>
+        <div class="stages" id="stages">
+          <div class="stg" data-k="write"><span class="t">✍️ Write</span><span class="s">tool + its tests</span></div>
+          <div class="stg" data-k="test"><span class="t">🔒 Test</span><span class="s">network cut off</span></div>
+          <div class="stg" data-k="smoke"><span class="t">🧪 Smoke run</span><span class="s">form defaults</span></div>
+          <div class="stg" data-k="ready"><span class="t">✨ Ready</span><span class="s">yours to use</span></div>
+        </div>
+        <div class="rounds" id="rounds"><span style="color:var(--ink-3)">rounds will appear here</span></div>
+        <div class="log" id="log"><div class="empty">Pick an example or describe a tool, then hit <b>Forge it</b>.</div></div>
+      </div>
+
+      <div class="sticker card done" id="done">
+        <div class="kicker">Forged</div>
+        <h3 id="d-name">Tool</h3>
+        <div id="d-desc" style="color:var(--ink-2);margin-top:6px"></div>
+        <div class="meta" id="d-meta"></div>
+        <a class="btn grape" id="d-use" href="use.html">Use it now →</a>
+        <div class="preview" id="d-prev"></div>
+      </div>
+
+      <div class="sticker card">
+        <h2>🧾 The code it wrote</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-f="tool">tool.py</button>
+          <button class="tab" role="tab" aria-selected="false" data-f="test">test_tool.py</button>
+        </div>
+        <pre class="code" id="code">— nothing yet —</pre>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
+      <div class="sticker card">
+        <h2>🛡️ Sandbox egress <span class="pill mint" style="margin-left:auto">live check</span></h2>
+        <div class="body">
+          <div id="eg"><div class="empty">checking from inside the VM…</div></div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:12px">Allowlist, enforced in-kernel by CreateOS:</div>
+          <div class="allow" id="allow"></div>
+          <p style="font-size:13.5px;color:var(--ink-2);margin:12px 0 0">Tests go further: they run as an unprivileged user in a network namespace with <b>no network at all</b>.</p>
+        </div>
+      </div>
+      <div class="sticker card">
+        <h2>📊 This run</h2>
+        <div class="body facts">
+          <div class="fact"><b id="f-rounds">0</b><span>rounds</span></div>
+          <div class="fact"><b id="f-tokens">0</b><span>tokens</span></div>
+          <div class="fact"><b id="f-time">0s</b><span>elapsed</span></div>
+          <div class="fact"><b id="f-out">—</b><span>output</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="recent">
+    <h2>Recently forged</h2>
+    <div class="rlist" id="recent"><div class="empty">No tools yet — forge the first one.</div></div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<script src="assets/render.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const EXAMPLES=[
+  "Turn a list of comma-separated numbers into a bar chart with a title",
+  "Turn an uploaded photo into a cute emoji-style sticker with a white outline",
+  "Turn a timesheet CSV into a real Stripe test-mode draft invoice",
+  "Check how strong a password is and explain the score with tips",
+  "Summarise a pasted CSV: row count, and min, max and mean of every numeric column, as a table",
+  "Convert between units (length, weight, temperature) with a dropdown",
+];
+EXAMPLES.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=g;
+  b.onclick=()=>{$('goal').value=g;$('goal').focus();};$('chips').appendChild(b);});
+let code={tool:'',test:''},showing='tool',t0=0,timer=null;
+document.querySelectorAll('.tab').forEach(tb=>tb.onclick=()=>{showing=tb.dataset.f;
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===tb));$('code').textContent=code[showing]||'— nothing yet —';});
+
+fetch('api/meta').then(r=>r.json()).then(m=>{
+  for(const [id,label] of Object.entries(m.models)){const o=document.createElement('option');o.value=id;o.textContent=label;$('model').appendChild(o);}
+  $('model').value=m.default_model;
+  $('allow').innerHTML='';m.egress.forEach(h=>{const p=document.createElement('span');p.className='pill';p.textContent=h;$('allow').appendChild(p);});
+}).catch(()=>{});
+function egress(){fetch('api/egress').then(r=>r.json()).then(d=>{$('eg').innerHTML='';
+  d.checks.forEach(c=>{const row=document.createElement('div');row.className='eg';
+    row.innerHTML=`<span></span><span class="pill ${c.reachable?'mint':'pink'}"><span class="dot ${c.reachable?'pass':'fail'}"></span>${c.reachable?'reachable · '+c.code:'blocked in-kernel'}</span>`;
+    row.firstChild.textContent=c.host;$('eg').appendChild(row);});}).catch(()=>{$('eg').innerHTML='<div class="empty">egress check unavailable</div>';});}
+egress();
+
+function recent(){fetch('api/tools').then(r=>r.json()).then(ts=>{if(!ts.length)return;$('recent').innerHTML='';
+  ts.slice(0,9).forEach(t=>{const a=document.createElement('a');a.className='sticker rt';a.href='use.html?tool='+encodeURIComponent(t.id);
+    const b=document.createElement('b');b.textContent=t.spec.name;const s=document.createElement('span');s.textContent=t.spec.description||t.goal;
+    const m=document.createElement('div');m.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
+    m.innerHTML=`<span class="pill butter"></span><span class="pill">${t.rounds} round${t.rounds>1?'s':''}</span>`+(t.spec.uses_stripe?'<span class="pill grape">Stripe</span>':'');
+    m.firstChild.textContent=OUTPUT_LABEL[t.spec.output]||t.spec.output;
+    a.append(b,s,m);$('recent').appendChild(a);});}).catch(()=>{});}
+recent();
+
+function stage(k,state){const order=['write','test','smoke','ready'];
+  document.querySelectorAll('.stg').forEach(s=>{const i=order.indexOf(s.dataset.k),j=order.indexOf(k);
+    s.className='stg'+(i<j?' ok':i===j?(' '+state):'');});}
+function addLog(e){const box=$('log');if(box.querySelector('.empty'))box.innerHTML='';
+  const d=document.createElement('div');d.className='ln '+(e.kind||'info');
+  d.innerHTML='<span class="tt"></span><span class="mm"></span>';d.children[0].textContent=e.t||'';d.children[1].textContent=e.msg;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;}
+
+$('f').addEventListener('submit',async ev=>{ev.preventDefault();
+  const goal=$('goal').value.trim();if(!goal){$('goal').focus();return;}
+  $('go').disabled=true;$('go').innerHTML='<span class="spin"></span> forging…';
+  $('log').innerHTML='';$('rounds').innerHTML='';$('done').classList.remove('show');
+  code={tool:'',test:''};$('code').textContent='— waiting for the first draft —';
+  ['f-rounds','f-tokens'].forEach(i=>$(i).textContent='0');$('f-out').textContent='—';
+  $('jobstate').textContent='running';$('jobdot').className='dot run';stage('write','on');
+  t0=Date.now();clearInterval(timer);timer=setInterval(()=>$('f-time').textContent=Math.round((Date.now()-t0)/1000)+'s',500);
+  let r;try{r=await fetch('api/forge',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({goal,model:$('model').value})});}catch(e){r=null;}
+  if(!r||!r.ok){const msg=r?(await r.json().catch(()=>({}))).detail:'network error';
+    addLog({kind:'fail',msg:'could not start: '+(msg||'error')});reset('failed');return;}
+  const {job}=await r.json();poll(job,0);
+});
+function reset(state){$('go').disabled=false;$('go').innerHTML='⚒ Forge it';clearInterval(timer);
+  $('jobstate').textContent=state;$('jobdot').className='dot '+(state==='done'?'pass':'fail');}
+
+async function poll(job,since){
+  let d;try{d=await (await fetch(`api/jobs/${job}?since=${since}`)).json();}catch(e){setTimeout(()=>poll(job,since),1500);return;}
+  for(const e of d.events){
+    if(e.type==='log')addLog(e);
+    else if(e.type==='phase'){stage(e.phase,'on');}
+    else if(e.type==='code'){code={tool:e.tool,test:e.test};$('code').textContent=code[showing];}
+    else if(e.type==='spec'){$('f-out').textContent=OUTPUT_LABEL[e.spec.output]||e.spec.output;}
+    else if(e.type==='round'){const c=document.createElement('span');c.className='rd '+(e.ok?'p':'f');c.textContent=e.n;
+      c.title=(e.ok?'passed':'failed at '+e.stage);if(!$('rounds').querySelector('.rd'))$('rounds').innerHTML='rounds';
+      $('rounds').appendChild(c);$('f-rounds').textContent=e.n;if(!e.ok)stage(e.stage==='smoke'?'smoke':'test','bad');}
+    else if(e.type==='preview'){renderOutput($('d-prev'),e.result);}
+    else if(e.type==='tokens'){$('f-tokens').textContent=e.total.toLocaleString();}
+    else if(e.type==='done'){
+      if(e.status==='done'){stage('ready','ok');document.querySelector('.stg[data-k=ready]').className='stg ok';showDone(e.tool);}
+      reset(e.status);recent();return;}
+  }
+  setTimeout(()=>poll(job,d.next),900);
+}
+function showDone(id){fetch('api/tools/'+encodeURIComponent(id)).then(r=>r.json()).then(t=>{
+  $('d-name').textContent=t.spec.name;$('d-desc').textContent=t.spec.description||'';
+  $('d-meta').innerHTML='';const pills=[`${t.spec.inputs.length} input${t.spec.inputs.length==1?'':'s'}`,
+    `→ ${OUTPUT_LABEL[t.spec.output]||t.spec.output}`,`${t.rounds} round${t.rounds>1?'s':''}`,`${t.seconds}s`];
+  pills.forEach(p=>{const s=document.createElement('span');s.className='pill';s.textContent=p;$('d-meta').appendChild(s);});
+  if(t.spec.uses_stripe){const s=document.createElement('span');s.className='pill grape';s.textContent='Stripe · needs approval';$('d-meta').appendChild(s);}
+  $('d-use').href='use.html?tool='+encodeURIComponent(id);$('done').classList.add('show');
+  $('done').scrollIntoView({behavior:'smooth',block:'center'});});}
+</script>
+</body>
+</html>
