@@ -1,0 +1,7 @@
+date,client,task,hours,rate_usd
+2026-10-06,Acme Corp,Backend API work,4.5,120
+2026-10-07,Acme Corp,Code review,2.0,120
+,,,,
+2026-10-08,Acme Corp,Database migration,3.25,120
+2026-10-09,Acme Corp,On-call (reduced rate),0.125,33
+2026-10-10,Acme Corp,Sprint planning,1.0,120
