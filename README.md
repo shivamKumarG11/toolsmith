@@ -6,7 +6,7 @@ fixes its own code until everything passes — and then you use it.**
 Built for the **CreateOS × Stripe "Build Agents That Run Code"** hackathon (Oct 2026).
 
 - **Live app (served from the CreateOS sandbox via ingress):** https://01m55pw72rnxt60t4mpf3rp4dr-8080.app.sb.createos.sh
-- **Demo video:** _(added at submission)_
+- **Demo video:** https://youtu.be/TPPeVW9QxNE
 
 ---
 
