@@ -141,10 +141,12 @@ a{color:var(--amber)}
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand">
+    <a class="brand" href="index.html" style="text-decoration:none;color:inherit">
       <div class="mark">⚒</div>
       <div><h1>Toolsmith</h1><p>agents that forge &amp; run their own tools</p></div>
-    </div>
+    </a>
+    <a href="index.html" style="color:var(--muted);font-size:13px;text-decoration:none">Home</a>
+    <a href="use.html" style="color:var(--muted);font-size:13px;text-decoration:none">Use the tool</a>
     <span class="pill live" id="pill-sb"><span class="dot"></span><span id="sb-label">sandbox ready</span></span>
     <span class="pill lock"><span class="dot"></span>egress&nbsp;locked</span>
     <span class="pill" id="pill-model"><span class="dot"></span><span id="model-label">model</span></span>
@@ -218,7 +220,13 @@ a{color:var(--amber)}
     </div>
   </div>
 
-  <p class="foot">Built on <b>Stripe</b> test mode + <b>CreateOS Sandbox</b> · the sandbox holds no key — money runs host-side behind a cap</p>
+  <p class="foot">The sandbox holds no key — money runs host-side behind a cap.
+    Next: <a href="use.html">use the tool the agent just forged →</a></p>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)">
+    <span style="font-family:var(--mono);font-size:11px;color:var(--faint)">FORGED ON</span>
+    <a href="https://createos.sh" target="_blank" style="display:flex;gap:8px;align-items:center;font-family:var(--display);font-weight:700;color:var(--fg);text-decoration:none"><span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(145deg,var(--ember),var(--amber-soft));display:grid;place-items:center;font-size:12px">⚒</span>CreateOS</a>
+    <a href="https://stripe.com" target="_blank" style="display:flex;gap:8px;align-items:center;font-family:var(--display);font-weight:700;color:var(--fg);text-decoration:none"><span style="width:22px;height:22px;border-radius:6px;background:#635bff;display:grid;place-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M13.5 9.3c0-.7.6-1 1.5-1 1.3 0 3 .4 4.3 1.1V5.3C17.9 4.8 16.5 4.6 15 4.6c-3.6 0-6 1.9-6 5 0 4.9 6.7 4.1 6.7 6.2 0 .8-.7 1.1-1.7 1.1-1.5 0-3.4-.6-4.9-1.4v4.2c1.6.7 3.3 1 4.9 1 3.7 0 6.2-1.8 6.2-5 0-5.3-6.7-4.3-6.7-6.4z"/></svg></span>Stripe</a>
+  </div>
 </div>
 
 <script>

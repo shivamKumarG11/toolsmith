@@ -47,9 +47,57 @@ def sse(obj: dict) -> str:
     return f"data: {json.dumps(obj)}\n\n"
 
 
+def _page(name: str) -> str:
+    return (ROOT / "web" / name).read_text(encoding="utf-8")
+
+
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
-    return WEB.read_text(encoding="utf-8")
+    return _page("index.html")
+
+
+@app.get("/index.html", response_class=HTMLResponse)
+def landing() -> str:
+    return _page("index.html")
+
+
+@app.get("/app.html", response_class=HTMLResponse)
+def app_page() -> str:
+    return _page("dashboard.html")
+
+
+@app.get("/use.html", response_class=HTMLResponse)
+def use_page() -> str:
+    return _page("use.html")
+
+
+@app.get("/api/use")
+def use_tool(csv: str):
+    """Run the tool the agent forged on the user's own timesheet → a real draft invoice."""
+    sb = _sandbox()
+    sb.set_egress(STRIPE_EGRESS)
+    # push the saved tool + the user's CSV
+    lib = ROOT / "tool_library"
+    tools = sorted(lib.glob("*/tool.py"))
+    if not tools:
+        return {"error": "no forged tool yet — run a forge first"}
+    _write(sb, "use_tool.py", tools[-1].read_text(encoding="utf-8"))
+    _write(sb, "use.csv", csv)
+    cust = f"use+{int(time.time())}@toolsmith.test"
+    code = ("cd /root && python3 -c \"import json,use_tool as t;"
+            "it=t.build_line_items('use.csv');"
+            f"inv=t.create_draft_invoice('{cust}', it);"
+            "print(json.dumps({'total_cents':t.total_cents(it),'count':len(it),"
+            "'id':inv.get('id'),'status':inv.get('status')}))\"")
+    res = sb.exec(code, env={"STRIPE_SECRET_KEY": config.STRIPE_SECRET_KEY}, timeout=90)
+    if not res.ok:
+        return {"error": (res.stderr or res.stdout)[-300:]}
+    try:
+        data = json.loads(res.stdout.strip().splitlines()[-1])
+        data["needs_approval"] = data.get("total_cents", 0) >= config.APPROVAL_CAP_CENTS
+        return data
+    except Exception:
+        return {"error": res.stdout[-300:]}
 
 
 @app.get("/api/meta")
