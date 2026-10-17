@@ -13,7 +13,8 @@
 .hero{background:var(--mint);border-bottom:var(--line);position:relative;overflow:hidden}
 .hero .in{display:grid;grid-template-columns:1fr 1.05fr;gap:24px;align-items:center;padding-block:46px 40px}
 @media(max-width:900px){.hero .in{grid-template-columns:1fr}}
-.hero h1{font-weight:800;font-size:clamp(42px,6.6vw,84px);line-height:.95;margin:0}
+.hero h1{font-weight:800;font-size:clamp(36px,6.6vw,84px);line-height:.95;margin:0;overflow-wrap:anywhere}
+.hero .in>*{min-width:0}
 .hero h1 .hl{background:var(--butter);border:var(--line);border-radius:16px;padding:0 .14em;box-shadow:var(--shadow);
   display:inline-block;transform:rotate(-2deg);margin:.06em 0}
 .hero h1 .hl2{color:var(--tangerine-d)}
@@ -21,7 +22,7 @@
 .built{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:12.5px;font-weight:700}
 .built .lg{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 12px;text-decoration:none}
 .built img{display:block}
-.stage{position:relative;height:clamp(340px,46vw,560px);min-width:0}
+.stage{position:relative;height:clamp(300px,46vw,560px);min-width:0}
 #scene{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}
 #scene:active{cursor:grabbing}
 .stage .hint{position:absolute;right:8px;bottom:6px;font-family:var(--mono);font-size:11.5px;font-weight:700;
@@ -40,6 +41,7 @@
 .sp .logo-box{flex:none;display:grid;place-items:center}
 .sp .name{font-family:var(--display);font-weight:800;font-size:clamp(34px,4.6vw,52px);letter-spacing:-.03em;line-height:1}
 .sp .role{font-family:var(--mono);font-size:13px;font-weight:500;margin-top:8px;color:var(--ink-2)}
+@media(max-width:560px){.sp{flex-direction:column;align-items:flex-start;padding:22px}.sp .logo-box img{max-height:64px}.sp.c .logo-box img{width:92px;height:62px}.sp.s .logo-box img{width:150px;height:auto}}
 
 /* how it works */
 .how{padding-block:60px 70px}
@@ -74,7 +76,7 @@
 <header class="hero">
   <div class="wrap in">
     <div>
-      <h1>Ask for <span class="hl">any tool.</span><br>Watch an agent <span class="hl2">build&nbsp;it.</span></h1>
+      <h1>Ask for <span class="hl">any tool.</span><br>Watch an agent <span class="hl2">build it.</span></h1>
       <div class="ctas">
         <a class="btn primary" href="forge.html">⚒ Forge a tool</a>
         <a class="btn" href="use.html">Use the tools →</a>
@@ -141,7 +143,7 @@
   catch(e){document.getElementById('fallback').style.display='grid';return;}
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
   const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(36,1,0.1,100);camera.position.set(0,1.2,11);
+  const camera=new THREE.PerspectiveCamera(36,1,0.1,100);camera.position.set(0,1.2,11);camera.lookAt(0,0,0);
   const INK=0x16141b;
 
   // crisp 3-step toon shading
@@ -214,8 +216,10 @@
   canvas.addEventListener('pointerleave',()=>{tx=ty=0;});
 
   function resize(){const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);
-    camera.aspect=r.width/Math.max(r.height,1);camera.updateProjectionMatrix();
-    camera.position.z=r.width<520?13.5:11;}
+    camera.aspect=r.width/Math.max(r.height,1);
+    // keep the whole orbit (≈4.5 units across each side) inside the frame at any aspect
+    camera.position.z=Math.min(19,Math.max(11.5,15/Math.min(camera.aspect,1.4)));
+    camera.updateProjectionMatrix();}
   addEventListener('resize',resize);resize();
 
   let visible=true;new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(canvas);

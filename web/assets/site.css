@@ -34,6 +34,7 @@ a{color:inherit}
 .gh{display:grid;place-items:center;width:40px;height:40px;border:var(--line);border-radius:12px;background:#fff;box-shadow:3px 3px 0 var(--ink)}
 .gh:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
 @media(max-width:720px){.nav a.lk.opt{display:none}}
+@media(max-width:520px){.nav .btn.sm{display:none}.nav .in{gap:12px}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:var(--line);border-radius:14px;
@@ -56,7 +57,7 @@ a{color:inherit}
 .dot.pass{background:var(--pass)} .dot.fail{background:var(--fail)} .dot.run{background:var(--tangerine);animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.35}}
 .kicker{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-h1,h2,h3{font-family:var(--display);letter-spacing:-.025em;text-wrap:balance}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.025em;text-wrap:balance;line-height:1.05}
 .spin{display:inline-block;width:15px;height:15px;border:2.5px solid var(--ink);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
