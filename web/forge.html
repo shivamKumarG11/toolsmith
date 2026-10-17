@@ -26,7 +26,9 @@ textarea#goal:focus{outline:none;box-shadow:var(--shadow)}
 .side-ctl{display:flex;flex-direction:column;gap:10px;min-width:230px}
 select{border:var(--line);border-radius:12px;padding:10px 12px;font-family:var(--body);font-size:14px;background:#fff;color:var(--ink)}
 .chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-.chip{border:2px solid var(--ink);border-radius:999px;padding:6px 13px;background:var(--paper);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--body);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:8px;border:2px solid var(--ink);border-radius:999px;padding:6px 13px;background:var(--paper);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--body);color:var(--ink)}
+.chip-stripe{height:22px;width:auto;display:block;background:#fff;border:2px solid var(--ink);border-radius:7px;padding:3px 7px}
+.stripe-pill{padding:3px 10px}.stripe-pill img{height:15px;width:auto;display:block}
 .chip:hover{background:var(--butter)}
 
 .bench{display:grid;grid-template-columns:1.35fr .9fr;gap:22px;margin-top:26px}
@@ -164,7 +166,9 @@ const EXAMPLES=[
   "Audit my subscriptions: paste each one with price and billing cycle, and show my true monthly and yearly spend with a donut chart",
   "Create a Stripe discount coupon",
 ];
-EXAMPLES.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=g;
+EXAMPLES.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='chip';
+  if(/stripe/i.test(g)){const i=document.createElement('img');i.src='assets/stripe-wordmark.svg';i.alt='Stripe';i.className='chip-stripe';b.appendChild(i);}
+  b.appendChild(document.createTextNode(g));
   b.onclick=()=>{$('goal').value=g;$('goal').focus();};$('chips').appendChild(b);});
 let code={tool:'',test:''},showing='tool',t0=0,timer=null;
 document.querySelectorAll('.tab').forEach(tb=>tb.onclick=()=>{showing=tb.dataset.f;
@@ -181,7 +185,7 @@ function recent(){fetch('api/tools').then(r=>r.json()).then(ts=>{$('recent').inn
   ts.forEach(t=>{const a=document.createElement('a');a.className='sticker rt';a.href='use.html?tool='+encodeURIComponent(t.id);
     const b=document.createElement('b');b.textContent=t.spec.name;const s=document.createElement('span');s.textContent=t.spec.description||t.goal;
     const m=document.createElement('div');m.style.cssText='display:flex;gap:6px;flex-wrap:wrap';
-    m.innerHTML=`<span class="pill butter"></span><span class="pill">${t.rounds} round${t.rounds>1?'s':''}</span>`+(t.spec.uses_stripe?'<span class="pill grape">Stripe</span>':'');
+    m.innerHTML=`<span class="pill butter"></span><span class="pill">${t.rounds} round${t.rounds>1?'s':''}</span>`+(t.spec.uses_stripe?'<span class="pill stripe-pill"><img src="assets/stripe-wordmark.svg" alt="Stripe"></span>':'');
     m.firstChild.textContent=OUTPUT_LABEL[t.spec.output]||t.spec.output;
     const del=document.createElement('button');del.type='button';del.className='del';del.textContent='✕';
     del.title='Delete this tool';del.setAttribute('aria-label','Delete '+t.spec.name);
