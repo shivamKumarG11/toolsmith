@@ -29,19 +29,22 @@ Always respond with exactly two fenced code blocks and nothing else:
 
 TASK = """Build a tool `tool.py` for: {spec}
 
-Requirements:
-- `build_line_items(csv_path)` returns a list of dicts {{"description": str, "amount_cents": int}}.
-  Each row's amount is hours * rate_usd, converted to an INTEGER number of cents.
-- `total_cents(items)` returns the sum of amount_cents as an int.
-- Money is always in integer cents (Stripe's unit). Never use floats for money totals.
-- A separate `create_draft_invoice(customer_email, items)` may call the Stripe API
-  (test mode) via the STRIPE_SECRET_KEY env var, but DO NOT call it from the test.
+The sandbox has Python 3 with the standard library only — the `stripe` package is
+NOT installed, so call the Stripe REST API with `urllib`, never `import stripe`.
 
-Real timesheets are messy. `build_line_items` must:
-- SKIP blank/empty rows (a row with no date and no hours is not a line item).
-- Round each line to cents HALF-UP (e.g. 4.125 USD -> 413 cents, not 412).
+`tool.py` must provide:
+- `build_line_items(csv_path)` -> list of {{"description": str, "amount_cents": int}}.
+  Each row's amount is hours * rate_usd as INTEGER cents. Use Decimal, never float, for money.
+  SKIP blank/empty rows. Round each line to cents HALF-UP (4.125 USD -> 413 cents, not 412).
+- `total_cents(items)` -> int sum of amount_cents.
+- `create_draft_invoice(customer_email, items)` -> dict with keys id, status, total.
+  Using STRIPE_SECRET_KEY (test mode) via urllib against https://api.stripe.com/v1 :
+  create a FRESH customer for this email, add one invoice item per line
+  (amount=amount_cents, currency=usd, description), then create a DRAFT invoice for
+  that customer (collection_method=send_invoice, days_until_due=7). Return the invoice's
+  id, status and total. The invoice `total` MUST equal total_cents(items).
 
-`test_tool.py` must test build_line_items and total_cents against this exact CSV at demo/timesheet.csv:
+`test_tool.py` tests against demo/timesheet.csv:
   date,client,task,hours,rate_usd
   2026-10-06,Acme Corp,Backend API work,4.5,120
   2026-10-07,Acme Corp,Code review,2.0,120
@@ -49,8 +52,12 @@ Real timesheets are messy. `build_line_items` must:
   2026-10-08,Acme Corp,Database migration,3.25,120
   2026-10-09,Acme Corp,On-call (reduced rate),0.125,33
   2026-10-10,Acme Corp,Sprint planning,1.0,120
-There are 5 real line items (the blank row is skipped). The correct total is
-1294.13 USD. Assert len(items) == 5 and total_cents(...) == 129413 exactly.
+- UNIT (always, no network): assert len(build_line_items(...)) == 5 and total_cents == 129413.
+- INTEGRATION (only when os.environ.get("RUN_INTEGRATION") == "1"): call
+  create_draft_invoice with a unique email like f"demo+{{time.time()}}@toolsmith.test",
+  assert the returned status == "draft" and total == 129413.
+Print "ALL TESTS PASSED" and exit 0 only if every applicable check passes; else print the
+failure and exit 1.
 """
 
 FIX = """The test failed in the sandbox. Here is the output:
