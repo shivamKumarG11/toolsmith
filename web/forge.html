@@ -129,14 +129,6 @@ pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mon
         <div class="preview" id="d-prev"></div>
       </div>
 
-      <div class="sticker card">
-        <h2>🧾 The code it wrote</h2>
-        <div class="tabs" role="tablist">
-          <button class="tab" role="tab" aria-selected="true" data-f="tool">tool.py</button>
-          <button class="tab" role="tab" aria-selected="false" data-f="test">test_tool.py</button>
-        </div>
-        <pre class="code" id="code">— nothing yet —</pre>
-      </div>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
@@ -176,7 +168,7 @@ EXAMPLES.forEach(g=>{const b=document.createElement('button');b.type='button';b.
   b.onclick=()=>{$('goal').value=g;$('goal').focus();};$('chips').appendChild(b);});
 let code={tool:'',test:''},showing='tool',t0=0,timer=null;
 document.querySelectorAll('.tab').forEach(tb=>tb.onclick=()=>{showing=tb.dataset.f;
-  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===tb));$('code').textContent=code[showing]||'— nothing yet —';});
+  document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===tb));($('code')||{}).textContent=code[showing]||'— nothing yet —';});
 
 fetch('api/meta').then(r=>r.json()).then(m=>{
   for(const [id,label] of Object.entries(m.models)){const o=document.createElement('option');o.value=id;o.textContent=label;$('model').appendChild(o);}
@@ -211,7 +203,7 @@ $('f').addEventListener('submit',async ev=>{ev.preventDefault();
   const goal=$('goal').value.trim();if(!goal){$('goal').focus();return;}
   $('go').disabled=true;$('go').innerHTML='<span class="spin"></span> forging…';
   $('log').innerHTML='';$('rounds').innerHTML='';$('done').classList.remove('show');
-  code={tool:'',test:''};$('code').textContent='— waiting for the first draft —';
+  code={tool:'',test:''};($('code')||{}).textContent='— waiting for the first draft —';
   ['f-rounds','f-tokens'].forEach(i=>$(i).textContent='0');$('f-out').textContent='—';
   $('jobstate').textContent='running';$('jobdot').className='dot run';stage('write','on');
   t0=Date.now();clearInterval(timer);timer=setInterval(()=>$('f-time').textContent=Math.round((Date.now()-t0)/1000)+'s',500);
@@ -229,7 +221,7 @@ async function poll(job,since){
   for(const e of d.events){
     if(e.type==='log')addLog(e);
     else if(e.type==='phase'){stage(e.phase,'on');}
-    else if(e.type==='code'){code={tool:e.tool,test:e.test};$('code').textContent=code[showing];}
+    else if(e.type==='code'){code={tool:e.tool,test:e.test};($('code')||{}).textContent=code[showing];}
     else if(e.type==='spec'){$('f-out').textContent=OUTPUT_LABEL[e.spec.output]||e.spec.output;}
     else if(e.type==='round'){const c=document.createElement('span');c.className='rd '+(e.ok?'p':'f');c.textContent=e.n;
       c.title=(e.ok?'passed':'failed at '+e.stage);if(!$('rounds').querySelector('.rd'))$('rounds').innerHTML='rounds';
