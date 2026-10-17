@@ -64,10 +64,11 @@ pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mon
 .done h3{margin:0;font-size:clamp(24px,3.4vw,34px)}
 .done .meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
 .preview{margin-top:14px;max-width:520px}
-.recent{margin-top:30px;padding-bottom:50px}
-.recent h2{font-size:24px;margin:0 0 14px}
+.recent-band{background:var(--lilac);border-top:var(--line);margin-top:40px;padding-block:34px 56px}
+.recent-band h2{font-size:28px;margin:0 0 18px}
 .rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.rt{padding:14px 16px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:transform .12s,box-shadow .12s}
+.rt{padding:14px 16px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:transform .12s,box-shadow .12s;background:#ffc93c}
+.rt .pill:not(.grape){background:#fff}
 .rt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
 .rt b{font-family:var(--display);font-size:17px} .rt span{font-size:13.5px;color:var(--ink-2)}
 </style>
@@ -75,7 +76,6 @@ pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mon
 <body>
 <nav class="nav"><div class="wrap in">
   <a class="brand" href="index.html"><span class="mk">⚒</span><b>Toolsmith</b></a>
-  <a class="lk opt" href="index.html">Home</a>
   <a class="lk" href="forge.html" aria-current="page">Forge</a>
   <a class="lk" href="use.html">Use tools</a>
   <a class="gh" href="https://github.com/shivamKumarG11/toolsmith" target="_blank" rel="noopener" aria-label="GitHub">
@@ -84,13 +84,8 @@ pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mon
 </div></nav>
 
 <section class="band"><div class="wrap in">
-  <div class="kicker">Step 2 · The forge</div>
   <h1>Tell the agent what to build.</h1>
   <p>It writes the tool and its tests, runs them sealed inside a CreateOS micro-VM, and fixes its own code until everything passes.</p>
-  <div class="spons">Running on
-    <a class="lg" href="https://createos.sh" target="_blank" rel="noopener"><img src="assets/createos-mark.svg" alt="" width="24" height="16">CreateOS Sandbox</a>
-    <a class="lg" href="https://stripe.com" target="_blank" rel="noopener"><img src="assets/stripe-wordmark.svg" alt="Stripe" height="18"></a>
-  </div>
 </div></section>
 
 <main class="wrap">
@@ -163,11 +158,11 @@ pre.code{margin:0;border-top:var(--line);padding:14px 18px;font-family:var(--mon
     </div>
   </div>
 
-  <section class="recent">
-    <h2>Recently forged</h2>
-    <div class="rlist" id="recent"><div class="empty">No tools yet — forge the first one.</div></div>
-  </section>
 </main>
+<section class="recent-band"><div class="wrap">
+  <h2>Recently forged</h2>
+  <div class="rlist" id="recent"><div class="empty">No tools yet — forge the first one.</div></div>
+</div></section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>

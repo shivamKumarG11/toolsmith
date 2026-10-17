@@ -34,6 +34,7 @@
 .sponsors .in{padding-block:54px}
 .sponsors h2{font-size:clamp(28px,4vw,44px);margin:6px 0 0;text-align:center}
 .sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}
+.sp.s{justify-content:center}
 @media(max-width:760px){.sp-grid{grid-template-columns:1fr}}
 .sp{display:flex;align-items:center;gap:22px;padding:28px 30px;text-decoration:none;transition:transform .15s,box-shadow .15s}
 .sp:hover{transform:translate(-3px,-3px);box-shadow:var(--shadow-lg)}
@@ -64,7 +65,6 @@
 <body>
 <nav class="nav"><div class="wrap in">
   <a class="brand" href="index.html"><span class="mk">⚒</span><b>Toolsmith</b></a>
-  <a class="lk opt" href="#how">How it works</a>
   <a class="lk opt" href="forge.html">Forge</a>
   <a class="lk opt" href="use.html">Use tools</a>
   <a class="gh" href="https://github.com/shivamKumarG11/toolsmith" target="_blank" rel="noopener" aria-label="Toolsmith on GitHub">
@@ -81,37 +81,28 @@
         <a class="btn primary" href="forge.html">⚒ Forge a tool</a>
         <a class="btn" href="use.html">Use the tools →</a>
       </div>
-      <div class="built">Built on
-        <a class="lg" href="https://createos.sh" target="_blank" rel="noopener"><img src="assets/createos-mark.svg" alt="" width="26" height="18">CreateOS</a>
-        <span>×</span>
-        <a class="lg" href="https://stripe.com" target="_blank" rel="noopener"><img src="assets/stripe-wordmark.svg" alt="Stripe" height="20"></a>
-      </div>
     </div>
     <div class="stage">
       <canvas id="scene" aria-label="3D forge: a glass sandbox with tools orbiting it. Drag to spin, click to forge."></canvas>
       <div class="fallback" id="fallback">⚒🔧🧪</div>
-      <span class="hint">drag to spin · click to forge</span>
     </div>
   </div>
 </header>
 
 <section class="sponsors"><div class="wrap in">
-  <div class="kicker" style="text-align:center">Built on</div>
   <h2>Two platforms. One agent that ships.</h2>
   <div class="sp-grid">
     <a class="sticker sp c" href="https://createos.sh" target="_blank" rel="noopener">
       <span class="logo-box"><img src="assets/createos-mark.svg" alt="" width="110" height="74"></span>
-      <span><div class="name">CreateOS</div><div class="role">Sandbox · Firecracker micro-VMs · in-kernel egress · ingress</div></span>
+      <span><div class="name">CreateOS</div></span>
     </a>
     <a class="sticker sp s" href="https://stripe.com" target="_blank" rel="noopener">
       <span class="logo-box"><img src="assets/stripe-wordmark.svg" alt="Stripe" width="190"></span>
-      <span><div class="role" style="margin-top:0">Payments · Projects · test mode, with a human approval step</div></span>
     </a>
   </div>
 </div></section>
 
 <section class="how" id="how"><div class="wrap">
-  <div class="kicker">How it works</div>
   <h2>From one sentence to a working tool.</h2>
   <div class="steps">
     <div class="sticker step"><span class="num">1</span><div class="ic">💬</div><h3>Describe it</h3>
@@ -126,10 +117,6 @@
       <p>A form appears for your new tool. Fill it in, hit run — real output, made by agent-written code.</p></div>
     <div class="sticker step"><span class="num">6</span><div class="ic">💳</div><h3>Money asks first</h3>
       <p>Tools that touch Stripe run in test mode and wait for your approval before they move anything.</p></div>
-  </div>
-  <div class="endcta">
-    <a class="btn primary" href="forge.html">⚒ Forge your first tool</a>
-    <a class="btn" href="use.html">Browse forged tools</a>
   </div>
 </div></section>
 
