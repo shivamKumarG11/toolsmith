@@ -238,31 +238,34 @@ function setInvoice(d){$('inv-amt').textContent='$'+(d.total_cents/100).toFixed(
   if(d.needs_approval){a.className='approval need';a.textContent='⏸ Needs approval — over the $200 cap';}
   else{a.className='approval auto';a.textContent='✓ Auto-approved — under the $200 cap';}}
 
-// Scripted example run so the page is alive at rest (and as an offline fallback).
+// Replay of a real captured run (gemini-3.5-flash-lite). Keeps the page alive at
+// rest and is the offline fallback when no server is attached.
 const EXAMPLE=[
- ['step','00.0','writing tool.py + test_tool.py for: timesheet CSV to Stripe invoice'],
- ['info','03.1','pushed tool.py, test_tool.py to sandbox (internet locked)'],
- ['step','03.2','round 1: running test_tool.py with egress OFF'],
- ['fail','08.7','round 1: FAILED — AssertionError: total_cents 129412 != 129413 (rounded 4.125¢ down)'],
- ['info','08.8','feeding the error back to the agent'],
- ['step','09.0','round 2: patched rounding to ROUND_HALF_UP — re-running'],
- ['pass','13.4','round 2: PASSED — 5 line items, total 129413¢'],
- ['step','13.6','opening egress to api.stripe.com only'],
- ['info','14.0','curl example.com → blocked in-kernel · curl api.stripe.com → 200'],
- ['step','14.2','creating test-mode draft invoice'],
- ['pass','15.9','invoice in_1Q…draft created · $1,294.13'],
- ['info','16.0','saved tool to library · token usage 4,305'],
+ ['step','02.1','writing tool.py + test_tool.py for: timesheet CSV to Stripe invoice'],
+ ['step','09.7','round 1: unit test (internet locked)'],
+ ['pass','10.4','round 1: logic green — opening Stripe only'],
+ ['info','11.0','example.com blocked in-kernel · api.stripe.com reachable'],
+ ['step','11.1','round 1: integration test against Stripe'],
+ ['fail','15.3','round 1: integration FAILED — AssertionError: expected total 129413, got 0'],
+ ['info','15.4','feeding the error back — pending invoice items were not attached'],
+ ['step','16.0','round 2: integration test against Stripe'],
+ ['fail','20.1','round 2: integration FAILED — expected total 129413, got 0'],
+ ['step','21.0','round 3: integration test against Stripe'],
+ ['pass','25.4','round 3: PASSED — tool verified against real Stripe'],
+ ['step','25.6','minting the invoice to show'],
+ ['pass','27.9','invoice in_1URdzT…draft · $1,294.13'],
+ ['info','28.0','saved tool to library · tokens 13,508'],
 ];
-function playExample(){clearUI();let i=0;$('forge-status').textContent='example run';
-  (function tick(){if(i>=EXAMPLE.length){
-      setTest(true,'2 rounds');addRound(1,false);addRound(2,true);
-      $('eg-stripe').textContent='200 · allowed';$('eg-stripe').className='verdict allowed';
-      $('eg-other').textContent='blocked';$('eg-other').className='verdict blocked';
-      setInvoice({total_cents:129413,id:'in_1Q…(demo)',status:'draft',needs_approval:true});return;}
+function playExample(){clearUI();let i=0;$('forge-status').textContent='replay';
+  (function tick(){if(i>=EXAMPLE.length){return;}
     const [k,t,m]=EXAMPLE[i++];line(k,t,m);
-    if(k==='fail'){setTest(false,'round 1');addRound(1,false);}
-    if(k==='pass'&&m.includes('PASSED')){setTest(true,'round 2');addRound(2,true);}
-    setTimeout(tick, 650);})();}
+    const rm=m.match(/round (\d+):.*(FAILED|PASSED)/);
+    if(rm){const n=+rm[1],ok=rm[2]==='PASSED';addRound(n,ok);setTest(ok,'round '+n);}
+    if(m.includes('blocked in-kernel')){
+      $('eg-stripe').textContent='200 · allowed';$('eg-stripe').className='verdict allowed';
+      $('eg-other').textContent='blocked';$('eg-other').className='verdict blocked';}
+    if(m.includes('invoice in_')){setInvoice({total_cents:129413,id:'in_1URdzT…',status:'draft',needs_approval:true});}
+    setTimeout(tick, 620);})();}
 
 // Live run via the server (SSE). Falls back to the example if offline.
 $('ask').addEventListener('submit',e=>{e.preventDefault();runLive($('spec').value);});

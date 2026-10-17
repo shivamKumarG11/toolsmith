@@ -7,3 +7,4 @@ __pycache__/
 .stripe/
 tool_library/*/run_*.json
 *.log
+!.env.example
