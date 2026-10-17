@@ -1,0 +1,9 @@
+.env
+.env.*
+.venv/
+__pycache__/
+*.pyc
+.projects/
+.stripe/
+tool_library/*/run_*.json
+*.log
