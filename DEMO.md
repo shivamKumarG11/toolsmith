@@ -1,58 +1,39 @@
-# Demo script — Toolsmith (2–3 min, one member on camera)
+# Demo script — Toolsmith (2–3 min, one person on camera)
 
-**Goal:** show the agent write code, run it, fail, fix itself, and mint a real Stripe
-invoice — all inside a locked-down CreateOS sandbox.
+Live URL: https://01m55pw72rnxt60t4mpf3rp4dr-8080.app.sb.createos.sh
+Everything below runs on the live site. No local setup needed.
 
-**Setup before recording**
-- `. .venv/Scripts/activate`
-- `export TOOLSMITH_MODEL="google/gemini-3.5-flash-lite"` (shows the fix loop)
-- `export TOOLSMITH_SANDBOX_ID=<the live sandbox id>` (reuse one sandbox)
-- `uvicorn src.server:app --port 8000` → open http://127.0.0.1:8000
-- Have the Stripe test dashboard open in a second tab to show the created invoice.
-
----
+**Before recording**
+- Open three tabs: the landing page, `/forge.html`, `/use.html`.
+- Have a photo ready to upload (a pet works well).
+- In the forge, pick the **Gemini 3.5 Flash Lite** model if you want to see more fix rounds; Sonnet is faster and more reliable.
 
 ## Beat sheet
 
-**0:00–0:20 — the problem (on camera)**
-> "Agents that write code are only useful if you can *trust* and *run* what they write.
-> Toolsmith writes a tool, runs it in a locked-down sandbox, fixes it until it passes,
-> and only then touches money — with my approval. Let me show you."
+**0:00–0:20 · On camera — the problem**
+> "Agents can write code, but would you run code an LLM just wrote? Toolsmith builds any small tool you
+> ask for, tests it sealed inside a CreateOS micro-VM, fixes itself until it passes — and then hands it to you."
 
-**0:20–0:30 — ask**
-Type: *"turn a timesheet CSV into a Stripe invoice"* → click **Forge tool**.
+**0:20–0:35 · Landing**
+Spin the 3D forge, click it for the spark burst. Point at the CreateOS + Stripe logos: "built on both."
 
-**0:30–1:30 — the forge (the core)**
-Narrate the live stream:
-- "It wrote the tool and a test, and it's testing the **logic with the internet cut off** —
-  watch the egress: everything is blocked."
-- "Round 1 **failed** — the invoice total came back wrong. It reads the error and patches
-  its own code."
-- "Now it opens **only Stripe**, runs the integration test again… still off… and —
-  **green**. It fixed a real Stripe bug on its own."
+**0:35–1:30 · Forge (the core)**
+Type a goal, e.g. *"Turn an uploaded photo into a cute emoji-style sticker with a white outline"* → **Forge it**.
+Narrate as it runs:
+- "It's writing the tool, the form for it, and its own tests."
+- "The tests run with **no network at all** — fresh code can't phone home." Point at the egress card:
+  "example.com is blocked in-kernel by CreateOS; only Stripe, PyPI and the model API are on the allowlist."
+- If a round fails: "It failed — it reads the error and patches its own code." (red → green rounds)
+- "Green. It's forged."
 
-**1:30–1:55 — the money, with a guardrail**
-- "It mints a **real test-mode invoice** — $1,294.13. That's over my $200 cap, so it
-  **pauses for approval** instead of just doing it." → click **Approve**.
-- Switch to the Stripe dashboard tab, show the draft invoice `in_…`.
+**1:30–2:10 · Use (the payoff)**
+Click **Use it now** → the form was generated from what the agent declared → upload your photo → **Run tool** → the sticker appears. "Agent-written code, running on my input."
+Then open **Timesheet to Stripe Draft Invoice** → show that it won't run until you tick **I approve** →
+approve → a real Stripe test-mode draft invoice id and total come back.
 
-**1:55–2:20 — the proof + the payoff**
-- Point at the egress card: "example.com was blocked in-kernel the whole time; only
-  Stripe was ever reachable."
-- "Ask for the same tool again — it's **instant**, served from the library. And it did all
-  this with one `run_code` tool, not twenty — a fraction of the tokens."
+**2:10–2:30 · Close (on camera)**
+> "Any tool, written, tested and fixed by an agent, safely, on CreateOS — and it asks before touching
+> money on Stripe. That's Toolsmith."
 
-**2:20–2:35 — close (on camera)**
-> "Toolsmith — an agent that forges, tests and fixes its own tools, safely, on CreateOS
-> and Stripe. Thanks!"
-
----
-
-## If the live run is risky, have a backup
-- A screen recording of a clean run saved locally.
-- The deployed replay URL (CreateOS ingress) as a fallback visual.
-
-## Don't forget
-- Say "test mode" out loud once.
-- Keep the terminal font large.
-- The build must be frozen before 06:00 IST; record before then.
+## Backup
+If a live forge is slow, the library already has working tools (sticker, chart, password check, Stripe invoice) — demo those on the Use page.

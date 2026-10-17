@@ -1,107 +1,108 @@
 # Toolsmith
 
-**An agent that forges its own tools — it writes a tool and a test, runs them in a
-locked-down CreateOS sandbox, fixes its code until the test is green, then mints a
-real Stripe invoice behind a human approval cap.**
+**Ask for any tool. An AI agent writes it, tests it sealed inside a CreateOS micro-VM,
+fixes its own code until everything passes — and then you use it.**
 
 Built for the **CreateOS × Stripe "Build Agents That Run Code"** hackathon (Oct 2026).
 
-- **Live demo (CreateOS ingress):** https://01m55pw72rnxt60t4mpf3rp4dr-8080.app.sb.createos.sh
+- **Live app (served from the CreateOS sandbox via ingress):** https://01m55pw72rnxt60t4mpf3rp4dr-8080.app.sb.createos.sh
 - **Demo video:** _(added at submission)_
 
 ---
 
 ## What it does
 
-You ask for a capability in one line — *"turn a timesheet CSV into a Stripe invoice."*
-Toolsmith then, on its own:
+Three pages, one loop:
 
-1. **Writes** `tool.py` and a `test_tool.py` for it.
-2. **Tests the logic with the internet fully cut off** — the sandbox's egress is
-   locked to an allowlist, so the agent's fresh (untrusted) code can't phone home.
-3. **Opens only `api.stripe.com`** and runs an **integration test against real Stripe
-   test mode** — creating a draft invoice and checking the total matches.
-4. **Fixes its own code and retries** until both tests pass (a real fail → fix → pass loop).
-5. **Mints the invoice** behind a spending cap: under the cap it's automatic, over it a
-   human approves.
-6. **Saves the tool** to a library so the next run is instant.
+1. **Landing** — what it is, with a three.js forge you can spin.
+2. **Forge** — type a goal (*"turn my photo into a sticker"*, *"chart these numbers"*,
+   *"make a Stripe invoice from this timesheet"*). The agent:
+   - writes `tool.py` **plus a declared form** (inputs, their types and example defaults, the output type)
+     and its own `test_tool.py`;
+   - runs its tests **with the network cut off**;
+   - runs a smoke test of the form defaults through a trusted harness that checks the output type;
+   - on any failure, reads the error and **fixes its own code**, up to four rounds.
+3. **Use** — every tool that passed shows up in a library. Its form is **generated from what the agent
+   declared** (text, numbers, toggles, dropdowns, file upload). Run it on your own input and get real
+   output: text, tables, data, images or a page.
 
-## Why the sandbox and Stripe matter here
+Tools that call **Stripe** run in test mode and only after you tick **"I approve this run"**.
 
-- The tool is **code the agent just wrote** — untrusted. It runs in a throwaway
-  CreateOS micro-VM whose **egress is dropped in-kernel** on the host and can't be
-  changed from inside the VM. During the logic test nothing is reachable; for the
-  integration test only Stripe is.
-- **The sandbox never holds a long-lived secret.** The Stripe key is injected only for
-  the integration step, and the money-moving decision (the approval cap) is enforced on
-  the host — so the agent's own code can't overspend or exfiltrate a key.
-- Everything is **Stripe test mode**. Real invoices, test data.
+### Tools the agent has forged on the live site (examples)
 
-## Which hackathon ideas it combines
+| Tool | Inputs → output | Rounds to green |
+|---|---|---|
+| Emoji Sticker Maker | photo upload, size, colour boost, outline → image | 3 |
+| Timesheet to Stripe Draft Invoice | CSV, customer, due days → real Stripe draft invoice | 1 (3 before a prompt fix — see notes) |
+| Bar Chart Maker | numbers, title, labels, colour → chart image | 1 |
+| Password Strength Checker | password → scored report | 1 |
 
-Toolsmith is one loop that merges six of the organiser's ideas: **#18** writes its own
-tools, **#13** one `run_code` tool (not twenty), **#01/#24** reproduce-then-fix until
-green, **#08** test with the internet locked, **#06** timesheet → Stripe invoice,
-**#07** spending cap + approval.
+## Why the sandbox is the point
 
-## Run it yourself
+The tool is code an LLM just wrote — untrusted. It never runs on a laptop or a shared server:
+
+- **CreateOS micro-VM.** The whole app lives in a Firecracker sandbox. Its outbound traffic is
+  restricted by an **in-kernel egress allowlist set from outside the VM** (`api.tokenrouter.com`,
+  `api.stripe.com`, `pypi.org`, `files.pythonhosted.org`). The Forge page checks it live:
+  `example.com` is blocked, Stripe is reachable.
+- **Per-run isolation inside the VM.** Agent-written code runs as an unprivileged `forge` user with a
+  clean environment (no keys), resource limits (`prlimit`), a timeout, and — for tests and every
+  non-Stripe tool — **its own network namespace with no network at all** (`unshare -rn`).
+- **Keys stay with the orchestrator.** The LLM key never reaches tool code. The Stripe test key is
+  passed only to tools that declare `uses_stripe`, only after human approval.
+- **Ingress.** The same sandbox serves the web app on a public HTTPS URL.
+
+## Stripe
+
+- Tools can call the Stripe API in **test mode** (customers, invoice items, draft invoices…).
+- A **human approval gate** sits in front of every Stripe-touching run.
+- Development used Stripe sandboxes (`stripe sandboxes create`). Stripe **Projects** onboarding is
+  invite-only in India, which blocked `stripe projects init` for this solo entry; this is on record with
+  the organisers.
+
+## Hackathon ideas it combines
+
+**#18** agent writes its own tools · **#13** one "run code" capability instead of many hand-wired tools ·
+**#01/#24** reproduce, then fix until green · **#08** test new code with the internet locked ·
+**#06** timesheet → Stripe invoice (one of the tools it forges) · **#07** spending/approval guardrail ·
+**#14** it deploys itself on CreateOS.
+
+## Run / deploy it
 
 ```bash
-# 1. Python env
-python -m venv .venv && . .venv/Scripts/activate      # Windows: .venv\Scripts\activate
+python -m venv .venv && . .venv/Scripts/activate   # Windows; use bin/activate elsewhere
 pip install -r requirements.txt
+cp .env.example .env                                # fill in the keys (never commit .env)
 
-# 2. Secrets (never commit these) — see .env.example
-cp .env.example .env     # then fill in the values
-
-# 3. One end-to-end run on the command line
-python run.py "turn a timesheet CSV into a Stripe invoice"
-
-# 4. Or the live dashboard
-uvicorn src.server:app --port 8000
-# open http://127.0.0.1:8000
+# Ship the app into a CreateOS sandbox and serve it publicly:
+./deploy.sh <sandbox-id>
 ```
 
-`.env` needs: `TOKENROUTER_API_KEY` + `LLM_BASE_URL` (any OpenAI-compatible LLM),
-`STRIPE_SECRET_KEY` (a Stripe **test** key — `stripe sandboxes create` gives one with no
-account), and `CREATEOS_API_KEY` (from createos.sh). Set `TOOLSMITH_MODEL` to pick the
-agent model; `google/gemini-3.5-flash-lite` shows the fix loop best, `anthropic/claude-sonnet-5.5`
-is the most reliable.
+`deploy.sh` sets the egress allowlist, uploads the code, installs dependencies, creates the
+unprivileged `forge` user, writes the secrets to a root-only file inside the VM, and starts the server
+on port 8080. The script never puts a key on a command line.
 
-## How it's built
+`.env` needs `TOKENROUTER_API_KEY` + `LLM_BASE_URL` (any OpenAI-compatible endpoint),
+`STRIPE_SECRET_KEY` (a Stripe **test** key) and `CREATEOS_API_KEY`.
 
-```
-You ─▶ Host orchestrator (Python)                 ← holds the keys, enforces the cap
-        • one tool for the agent: run code in the sandbox
-        • LLM via TokenRouter · Stripe test key · CreateOS CLI
-             │  createos exec / firewall / ingress
-             ▼
-     CreateOS micro-VM (reused, 1 vCPU / 1 GB)
-        • runs the tool + its tests
-        • egress allowlist (none → Stripe only) enforced in-kernel
-        • serves the dashboard publicly via --ingress
-```
+## Code map
 
-- `src/agent.py` — the write → test → fix loop and its prompts.
-- `src/sandbox.py` — CreateOS CLI wrapper (create, exec, firewall/egress, push/pull).
-- `src/llm.py` — TokenRouter client with token accounting.
-- `src/server.py` — FastAPI dashboard, streams the live build over SSE.
-- `web/dashboard.html` — the forge console UI.
-- `run.py` — one-shot command-line run.
+| Path | What |
+|---|---|
+| `src/forge.py` | The agent loop: prompts, isolated runner (`runuser` + `prlimit` + `unshare -rn`), test/smoke/fix rounds, tool library, trusted output harness |
+| `src/web_app.py` | FastAPI app inside the VM: forge jobs (polled), library, run, approval gate, live egress check |
+| `src/llm.py` | OpenAI-compatible client with token accounting |
+| `web/` | The three pages, shared styles, safe output renderer, sponsor logos |
+| `deploy.sh` | One-command deploy into a CreateOS sandbox |
+| `run.py`, `src/server.py`, `src/sandbox.py` | The first, host-driven version (drives the sandbox through the `createos` CLI and toggles egress per phase) |
 
-## Tech
+## Notes
 
-Python 3 · FastAPI + SSE · an OpenAI-compatible LLM via TokenRouter · Stripe REST (test
-mode) · CreateOS Sandbox (Firecracker micro-VMs, in-kernel egress control, ingress).
-
-## Honest notes
-
-- The **hosted** link replays a real captured run (a hosted server can't drive the
-  egress lockdown, which must come from outside the VM). The **genuinely live** loop runs
-  locally and in the demo video.
-- Stripe **Projects** onboarding is invite-only in India, so this uses the Stripe **test
-  sandbox** (verified working) rather than a provisioned Projects account.
-- Nothing here is reused from a prior project; it was written during the hackathon.
+- Two real failure modes surfaced during the build and are handled: long LLM replies cut off at the
+  token limit (the parser now tolerates a cut-off final block), and a Stripe tool that "passed" by
+  quietly falling back to a preview when our sandbox key had an unfamiliar prefix — the prompt now
+  forbids fake fallbacks and the re-forged tool creates real draft invoices.
+- Everything was written during the hackathon. Logos belong to CreateOS and Stripe.
 
 ## Licence
 
