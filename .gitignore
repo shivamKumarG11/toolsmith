@@ -9,3 +9,4 @@ __pycache__/
 tool_library/*/run_*.json
 *.log
 !.env.example
+!.projects/state.local.json

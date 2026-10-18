@@ -1,0 +1,49 @@
+{
+  "version": 4,
+  "project": {
+    "catalog": "prod",
+    "initializedAt": "2026-10-17T23:55:22.614Z",
+    "merchantDisplayName": null,
+    "merchantId": "acct_1URhDjKm1oUKWnEn",
+    "projectId": "project_61Vb5P1JIGe3wwO1k16Vb5B5CdSQ0DTuz5MCbLHA8MWW",
+    "projectName": "toolsmith"
+  },
+  "providers": {
+    "createos": {
+      "accountRequestId": "facctrq_61Vb5PVFXknmEduoC16Vb5B5CdSQ0DTuz5MCbLHA8744",
+      "configuration": {},
+      "linkedAt": "2026-10-17T23:55:53.568Z",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "redirectUrl": null,
+      "requestedAt": "2026-10-17T23:55:53.568Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "createos-plan": {
+      "configuration": {},
+      "createdAt": "2026-10-17T23:55:55.644Z",
+      "lastRevealedAt": "2026-10-17T23:55:56.155Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-plan",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb5PXcbwCGkTIzv16Vb5B5CdSQ0DTuz5MCbLHA8DPE",
+      "serviceId": "free"
+    },
+    "createos-project": {
+      "configuration": {},
+      "createdAt": "2026-10-17T23:56:00.806Z",
+      "lastRevealedAt": "2026-10-17T23:56:01.329Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-project",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb5Pcu62p9xg3ha16Vb5B5CdSQ0DTuz5MCbLHA8ITo",
+      "serviceId": "project"
+    }
+  }
+}
