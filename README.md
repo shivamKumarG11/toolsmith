@@ -56,9 +56,10 @@ The tool is code an LLM just wrote — untrusted. It never runs on a laptop or a
 
 - Tools can call the Stripe API in **test mode** (customers, invoice items, draft invoices…).
 - A **human approval gate** sits in front of every Stripe-touching run.
-- Development used Stripe sandboxes (`stripe sandboxes create`). Stripe **Projects** onboarding is
-  invite-only in India, which blocked `stripe projects init` for this solo entry; this is on record with
-  the organisers.
+- **Stripe Projects** provisions the CreateOS side of the stack: `stripe projects init`, then
+  `stripe projects add createos/free` + `createos/project` (stack: https://projects.dev/s#v1:createos~project;
+  `.projects/state.json` is in this repo). Getting there from India took a second account through Stripe's
+  "Activate Projects" flow, since standard sign-up is invite-only here.
 
 ## Hackathon ideas it combines
 
