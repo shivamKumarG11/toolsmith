@@ -121,6 +121,7 @@ function render(t){const m=$('main');m.innerHTML='';
   const note=document.createElement('span');note.style.cssText='font-family:var(--mono);font-size:12.5px;color:var(--ink-2)';
   note.textContent='runs as agent-written code in the CreateOS sandbox';
   row.append(btn,note);form.appendChild(row);m.appendChild(form);
+  if(new URLSearchParams(location.search).get('run')==='1'&&!t.spec.uses_stripe)setTimeout(()=>form.requestSubmit(),400);
 
   const out=document.createElement('div');out.className='sticker out';out.id='out';
   out.innerHTML='<h3>Output <span class="pill" id="otime"></span></h3><div id="obody"></div>';m.appendChild(out);
@@ -138,7 +139,9 @@ function render(t){const m=$('main');m.innerHTML='';
     renderOutput($('obody'),res);out.scrollIntoView({behavior:'smooth',block:'nearest'});});
 }
 
-function field(f){const w=document.createElement('div');w.className='field';
+function field(f){const q=new URLSearchParams(location.search);
+  if(q.has(f.name)){f=Object.assign({},f,{default:f.type==='boolean'?q.get(f.name)==='true':q.get(f.name)});}
+  const w=document.createElement('div');w.className='field';
   const id='in-'+f.name;const lab=document.createElement('label');lab.htmlFor=id;lab.textContent=f.label||f.name;
   let el;const t=f.type||'text';
   if(t==='textarea'){el=document.createElement('textarea');el.value=f.default??'';}
